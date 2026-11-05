@@ -1,0 +1,27 @@
+name: Brief state gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  brief-state-gate:
+    name: brief-state-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out versioned files
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Require tracked artifacts and current briefs
+        run: node tools/ci-gate.js
