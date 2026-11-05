@@ -17,8 +17,8 @@ SP.decisions = [
     id: "D2",
     t: { en: "Approve the WP3 security budget lines", tr: "WP3 güvenlik bütçe kalemlerini onayla" },
     detail: {
-      en: "Personnel €285,000 plus equipment, subcontracting (pentest, certification), travel and other — total €285,000.",
-      tr: "Personel €285.000 ve ekipman, alt yüklenici (sızma testi, belgelendirme), seyahat ve diğer — toplam €285.000."
+      en: "Personnel €168,000 (19 PM) plus equipment, subcontracting (pentest, certification), travel and other — total €285,000.",
+      tr: "Personel 168.000 € (19 AD) ve ekipman, alt yüklenici (sızma testi, belgelendirme), seyahat ve diğer — toplam 285.000 €."
     },
     owner: "CEO", due: "M1"
   },

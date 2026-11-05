@@ -1,0 +1,6 @@
+# Default owner for the portal and its generated release artifacts.
+* @ErdalBirinci
+
+/.github/ @ErdalBirinci
+/assets/js/ @ErdalBirinci
+/tools/ @ErdalBirinci

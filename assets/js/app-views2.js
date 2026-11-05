@@ -209,6 +209,7 @@
       var h = H(), t = h.t, esc = h.esc, L = h.L;
       if (id) {
         var doc = SP.docById(id);
+        var dm = doc ? ((h.state.data.docMeta || {})[doc.id] || {}) : {};
         if (!doc) return h.head("", t("doc.notFound"), "") + '<a class="btn" href="#docs">' + esc(t("doc.back")) + "</a>";
         var secs = doc.sections.map(function (s) {
           var inner = "<h2>" + esc(L(s.h)) + "</h2>";
@@ -221,9 +222,9 @@
           '<div class="doc-meta">' +
           '<div>' + esc(t("doc.field.code")) + "<strong>" + esc(doc.code) + "</strong></div>" +
           '<div>' + esc(t("doc.field.owner")) + "<strong>" + esc(doc.owner) + "</strong></div>" +
-          '<div>' + esc(t("doc.field.version")) + "<strong>v" + esc(doc.version) + "</strong></div>" +
-          '<div>' + esc(t("doc.field.approval")) + "<strong>" + esc(doc.approval) + "</strong></div>" +
-          '<div>' + esc(t("doc.field.review")) + "<strong>" + esc(doc.review) + "</strong></div>" +
+          '<div>' + esc(t("doc.field.version")) + "<strong>v" + esc(dm.version || doc.version) + "</strong></div>" +
+          '<div>' + esc(t("doc.field.approval")) + "<strong>" + esc(dm.approval || doc.approval) + "</strong></div>" +
+          '<div>' + esc(t("doc.field.review")) + "<strong>" + esc(dm.review || doc.review) + "</strong></div>" +
           "</div>" +
           '<div class="card no-print" style="margin-bottom:14px"><div class="row-between"><span class="tiny t-muted">' + esc(t("doc.purpose")) + ": " + esc(L(doc.purpose)) + "</span>" +
           '<span class="row" style="gap:8px"><button class="btn btn-sm" data-doc-md="' + esc(doc.id) + '">' + esc(t("doc.downloadMd")) + "</button>" +
@@ -236,7 +237,7 @@
         return '<a class="card" href="#docs/' + esc(d.id) + '">' +
           '<div class="card-head"><div><div class="tiny mono" style="color:var(--accent)">' + esc(d.code) + "</div><h3 style=\"margin-top:4px\">" + esc(L(d.title)) + "</h3>" +
           '<p>' + esc(L(d.purpose)) + "</p></div></div>" +
-          '<div class="row-between"><span class="tiny t-muted">' + esc(t("doc.field.version")) + " v" + esc(d.version) + " · " + esc(d.owner) + "</span>" +
+          '<div class="row-between"><span class="tiny t-muted">' + esc(t("doc.field.version")) + " v" + esc(((h.state.data.docMeta || {})[d.id] || {}).version || d.version) + " · " + esc(d.owner) + "</span>" +
           '<span class="tiny" style="color:var(--accent)">' + esc(t("common.openView")) + " →</span></div></a>";
       }).join("") + "</div>";
       out += '<div style="margin-top:14px">' + h.callout(esc(t("doc.note")), "warn", "!") + "</div>";
@@ -269,7 +270,7 @@
         (SP.pilotCities || []).map(function (c) {
           var w = SP.pilotWaveOf ? SP.pilotWaveOf(c.id) : null;
           return '<option value="' + esc(c.id) + '"' + (evCity === c.id ? " selected" : "") + ">" + esc(c.id + " · " + c.name + (w ? " · " + L(w.label) : "")) + "</option>";
-        }).join("") +
+        }).join("") + "</select>" +
         '<span class="count-note">|</span><span class="tiny t-muted">' + esc(evScope) + "</span></div>" +
         '<p class="tiny t-muted" style="margin:-4px 0 10px">' + esc(t("rep.evidenceScopeNote")) + "</p>";
 
@@ -280,9 +281,11 @@
 
       var kpis = SP.kpis.map(function (k) {
         var val = "—";
-        if (k.auto === "compliance") val = h.pct(cs.overall);
-        if (k.auto === "dpia") val = "0 / 7";
-        if (k.auto === "oversight") val = "100%";
+        var actual = (st.data.kpi || {})[k.id];
+        if (actual !== undefined && String(actual).trim() !== "") val = String(actual);
+        else if (k.auto === "compliance") val = h.pct(cs.overall);
+        else if (k.auto === "dpia") val = "0 / 7";
+        else if (k.auto === "oversight") val = "100%";
         return '<td class="col-id">' + esc(k.id) + "</td><td><strong>" + esc(L(k.name)) + '</strong><div class="tiny t-muted" style="margin-top:3px">' + esc(L(k.def)) + "</div></td>" +
           '<td class="nowrap mono tiny">' + esc(val) + '</td><td class="nowrap tiny">' + esc(k.target) + "</td><td class=\"tiny t-muted\">" + esc(L(k.freq)) + "</td><td class=\"tiny\">" + esc(k.owner) + "</td>";
       });

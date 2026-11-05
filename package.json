@@ -1,0 +1,17 @@
+{
+  "name": "safe-parks-ciso-portal",
+  "version": "1.1.0",
+  "private": true,
+  "description": "SAFE-PARKS CISO governance, compliance and assurance portal",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test tests/management.test.js tests/state-hash.test.js",
+    "check": "node tools/check-data.js",
+    "build:artifacts": "node tools/build-brief.js --state safeparks-brief-state.json && node tools/build-gono-decisions.js --state safeparks-brief-state.json && node tools/build-evidence-csv.js --state safeparks-brief-state.json",
+    "gate": "node tools/ci-gate.js",
+    "serve": "node tools/serve.js 4173"
+  }
+}

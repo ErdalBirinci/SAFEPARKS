@@ -52,6 +52,7 @@ window.I18N.tr = {
   "nav.deliverables": "Çıktılar",
   "nav.docs": "Politika kütüphanesi",
   "nav.reporting": "KPI'lar ve raporlama",
+  "nav.management": "Yönetim konsolu",
   "nav.settings": "Ayarlar",
   "nav.gono": "Devreye alma (go/no-go)",
 

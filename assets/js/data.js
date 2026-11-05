@@ -22,7 +22,7 @@ SP.meta = {
   ownerRole: "CISO",
   cisoName: "",
   dpoName: "",
-  classification: "EU-PUBLIC (project working copy)",
+  classification: "PUBLIC REPOSITORY · working copy (client-side gate only)",
   assumptions: [
     { en: "36-month duration assumed; confirm against Grant Agreement Article 3.", tr: "36 ay süre varsayılmıştır; Grant Agreement Madde 3 ile doğrulanmalıdır." },
     { en: "City-level allocation of the 7 pilot municipalities is indicative only.", tr: "7 pilot belediyenin ülke dağılımı yalnızca göstergedir." },

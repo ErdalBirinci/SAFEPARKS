@@ -52,6 +52,7 @@ window.I18N.en = {
   "nav.deliverables": "Deliverables",
   "nav.docs": "Policy library",
   "nav.reporting": "KPIs & reporting",
+  "nav.management": "Management console",
   "nav.settings": "Settings",
   "nav.gono": "Go / no-go",
 

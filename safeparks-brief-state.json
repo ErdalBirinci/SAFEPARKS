@@ -1,0 +1,24 @@
+{
+  "kind": "safeparks-brief-state",
+  "version": 2,
+  "schemaVersion": 2,
+  "appVersion": "1.1.0",
+  "exportedAt": "2026-11-05T00:00:00.000Z",
+  "project": "SAFE-PARKS",
+  "lang": "tr",
+  "settings": {
+    "ciso": "",
+    "dpo": "",
+    "ga": ""
+  },
+  "comp": {},
+  "risks": {},
+  "deliv": {},
+  "checks": {},
+  "gono": {},
+  "decisions": {},
+  "cityRisks": {},
+  "cityRiskMeta": {},
+  "gonoArchive": [],
+  "notes": {}
+}

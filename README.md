@@ -28,6 +28,7 @@ No build step, no dependencies, no server-side code, no network calls. Open the 
 | **Deliverables** | 12 deliverables with due month, dissemination level, CISO role and editable status. |
 | **Policy library** | 9 policies + CISO charter, fully bilingual, printable and downloadable as Markdown. |
 | **KPIs & reporting** | 14 KPIs, monthly/quarterly/steering pack contents, Markdown and JSON export. |
+| **Management console** | Tasks, decision metadata, risk acceptance, KPI and budget actuals, document control, local snapshots, data health, audit trail and CSV/ICS exports. |
 | **Settings** | CISO/DPO/GA fields, language, theme, export/import/reset, open items. |
 
 All editable state (control status, risk status, deliverable status, 90-day ticks, names) is saved in
@@ -38,6 +39,22 @@ repository; only their SHA-256 digests are checked in the browser. The unlocked 
 current browser tab. This is a convenience gate, not a security boundary: GitHub Pages is static, so
 the HTML, data files and generated PDFs remain readable by anyone who has a direct URL or the source.
 Use a server-side access proxy (for example Cloudflare Access) if the content must be confidential.
+
+### Management console
+
+The **Management** view adds a local-first operating layer on top of the existing portal: tasks with
+owner/due/status, decision metadata and approvers, risk acceptance with expiry, KPI and WP3 budget
+actuals, document versions and review dates, snapshots/restore, a data-health summary, an audit trail,
+an audit CSV and a task calendar (ICS). Successful sign-in carries a user label and role into the audit
+entries, and the session ends on sign-out or after 30 minutes without input.
+
+A canonical `safeparks-brief-state.json` is versioned so the briefs, go/no-go record and evidence CSV
+have a reviewed baseline. The repository also ships dependency-free unit tests, a data-integrity check
+and a CI gate that refuses stale or untracked artifacts. See `docs/OPERATIONS.md` for the routine and
+release procedure.
+
+These controls remain local to one browser. Shared multi-user editing, server-side roles, trustworthy
+audit storage and automatic reminders require a backend and are deliberately **not** claimed here.
 
 ---
 
@@ -82,6 +99,8 @@ assets/js/docs2.js          policies POL-06 … POL-09 + CH-01, doc index
 assets/js/app-views.js      compliance, missing-evidence, privacy, architecture, risk views
 assets/js/app-views2.js     assurance, incidents, WP3, deliverables, docs, reporting, settings
 assets/js/app-views3.js     pilot go/no-go view (checklist, overview, decision record)
+assets/js/app-views4.js     management console (tasks, approvals, snapshots, audit, health)
+assets/js/management.js     dependency-free management helpers shared by the portal and tests
 assets/js/app.js            state, i18n binding, router, shared UI, dashboard, project, governance, mandate
 tools/serve.js              dependency-free static server for local preview (development only)
 SAFE-PARKS-Executive-Brief.html  generated A4 executive brief (CEO / consortium, TR+EN)
@@ -99,6 +118,20 @@ tools/ci-gate.js            required CI gate: tracked state/artifacts + current 
 .github/workflows/brief-state-gate.yml  runs the gate on pull requests, main pushes and manual runs
 tools/build-gono-decisions.js  regenerates the signed go/no-go decision records
 tools/build-evidence-csv.js    writes the evidence ledger CSV from an exported portal state
+tools/check-data.js          validates source counts, required fields, links and budget totals
+tests/management.test.js     unit tests for audit, snapshots, tasks, validation and exports
+tests/state-hash.test.js     state-hash stability tests
+safeparks-brief-state.json   canonical reviewed state used to regenerate release artifacts
+docs/OPERATIONS.md           roles, routine work, release, recovery and static-site limits
+```
+
+Local checks:
+
+```bash
+npm test
+npm run check
+npm run build:artifacts
+npm run gate
 ```
 
 ### Adding or changing content
@@ -138,8 +171,9 @@ not a transcription of the signed DoA. Replace them with the negotiated values.
 ## 5. Limits of this instrument
 
 * It is **not** a certified system: the password gate is client-side only, there is no server-side
-  session or audit trail beyond the browser, and a direct URL bypasses the portal screen. Do not store
-  personal data in it.
+  session, and local audit entries can be edited or cleared by whoever controls the browser. A direct
+  URL bypasses the portal screen, and the repository itself is public. Do not store personal data or
+  confidential material in it.
 * Legal text is a working interpretation, not legal advice; the controller municipalities and their
   DPOs remain responsible for lawfulness.
 * Bilingual content is maintained in parallel; when you edit one language, edit the other.

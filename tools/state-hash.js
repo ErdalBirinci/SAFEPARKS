@@ -7,7 +7,7 @@
 
 const crypto = require("crypto");
 
-const FIELDS = ["comp", "risks", "deliv", "checks", "notes", "gono", "decisions", "cityRisks", "cityRiskMeta"];
+const FIELDS = ["comp", "risks", "deliv", "checks", "notes", "gono", "gonoArchive", "decisions", "cityRisks", "cityRiskMeta"];
 
 function unwrapState(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
@@ -32,9 +32,10 @@ function payload(raw) {
   const data = unwrapState(raw);
   const out = {};
   FIELDS.forEach(function (field) {
-    out[field] = data[field] && typeof data[field] === "object" && !Array.isArray(data[field])
-      ? data[field]
-      : {};
+    const value = data[field];
+    if (Array.isArray(value)) out[field] = value;
+    else if (value && typeof value === "object") out[field] = value;
+    else out[field] = {};
   });
   return out;
 }

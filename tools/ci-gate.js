@@ -27,7 +27,8 @@ const ARTIFACTS = [
   "SAFE-PARKS-Decision-Table.docx",
   "SAFE-PARKS-Decision-Table.xlsx",
   "SAFE-PARKS-Decision-Table-EN.tsv",
-  "SAFE-PARKS-Decision-Table-TR.tsv"
+  "SAFE-PARKS-Decision-Table-TR.tsv",
+  "SAFE-PARKS-Evidence-Ledger.csv"
 ];
 
 let stateArg = "safeparks-brief-state.json";

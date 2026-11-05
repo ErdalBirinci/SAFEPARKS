@@ -386,7 +386,10 @@
             (cityAdj ? '<div class="tiny t-muted">' + esc(t("risk.cityAdj")) + "</div>" : "") + "</td>" +
           '<td><span class="badge badge-' + (tone === "critical" ? "gap" : tone === "high" ? "partial" : tone === "medium" ? "info" : "ready") + '">' + esc(t("risk." + tone)) + "</span></td>" +
           '<td><div class="tiny">' + esc(L(r.m)) + '</div><div class="tiny t-muted" style="margin-top:4px">' + esc(t("risk.due")) + ": " + esc(r.due) + " · " + esc(r.owner) + "</div></td>" +
-          "<td>" + h.statusSelect("risks", r.id, cur, ["open", "treating", "accepted", "closed"]) + "</td>";
+          "<td>" + h.statusSelect("risks", r.id, cur, ["open", "treating", "accepted", "closed"]) +
+            (((st.data.riskAcceptance || {})[r.id])
+              ? '<div class="tiny t-muted" style="margin-top:4px">' + esc(L({ en: "Accepted by", tr: "Kabul eden" })) + ": " + esc(((st.data.riskAcceptance || {})[r.id].acceptedBy) || "—") + " · " + esc(((st.data.riskAcceptance || {})[r.id].expires) || "—") + "</div>"
+              : "") + "</td>";
       });
 
       out += '<div class="no-print">' + h.table([{ label: t("common.id") }, { label: t("common.description") }, { label: t("common.category") },

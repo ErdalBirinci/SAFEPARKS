@@ -8,12 +8,24 @@
 
   var STORE_KEY = "safeparks-ciso-v1";
 
+  function actor() {
+    return window.SP_AUTH || { id: "local", label: "Yerel kullanıcı", role: "editor" };
+  }
+
   var state = {
+    schemaVersion: 2,
+    appVersion: window.APP_VERSION || "1.1.0",
+    updatedAt: "",
+    updatedBy: "",
     lang: "tr",
     theme: "dark",
     route: "dashboard",
     ui: {},
-    data: { comp: {}, risks: {}, deliv: {}, checks: {}, notes: {}, gono: {}, gonoArchive: [], cityRisks: {}, cityRiskMeta: {} },
+    data: {
+      comp: {}, risks: {}, deliv: {}, checks: {}, notes: {}, gono: {}, gonoArchive: [], decisions: {},
+      cityRisks: {}, cityRiskMeta: {}, decisionMeta: {}, riskAcceptance: {}, kpi: {}, budgetActual: {},
+      docMeta: {}, tasks: [], audit: [], snapshots: [], meta: { schemaVersion: 2 }
+    },
     settings: { ciso: "", dpo: "", ga: "" }
   };
 
@@ -24,19 +36,44 @@
       if (!raw) return;
       var saved = JSON.parse(raw);
       if (saved && typeof saved === "object") {
+        if (saved.schemaVersion) state.schemaVersion = saved.schemaVersion;
+        if (saved.appVersion) state.appVersion = saved.appVersion;
+        if (saved.updatedAt) state.updatedAt = saved.updatedAt;
+        if (saved.updatedBy) state.updatedBy = saved.updatedBy;
         if (saved.lang) state.lang = saved.lang;
         if (saved.theme) state.theme = saved.theme;
         if (saved.data) state.data = Object.assign(state.data, saved.data);
         if (saved.settings) state.settings = Object.assign(state.settings, saved.settings);
+        if (SP.manage) SP.manage.ensure(state.data);
       }
     } catch (e) { /* corrupted storage: start clean */ }
   }
   function save() {
     try {
+      if (SP.manage) SP.manage.ensure(state.data);
+      var at = new Date().toISOString();
+      state.updatedAt = at;
+      state.updatedBy = actor().label;
+      state.schemaVersion = (SP.manage && SP.manage.SCHEMA_VERSION) || 2;
+      state.appVersion = window.APP_VERSION || "1.1.0";
+      state.data.meta = state.data.meta || {};
+      state.data.meta.schemaVersion = state.schemaVersion;
+      state.data.meta.updatedAt = at;
+      state.data.meta.updatedBy = state.updatedBy;
       localStorage.setItem(STORE_KEY, JSON.stringify({
-        lang: state.lang, theme: state.theme, data: state.data, settings: state.settings, t: Date.now()
+        schemaVersion: state.schemaVersion, appVersion: state.appVersion, updatedAt: at,
+        updatedBy: state.updatedBy, lang: state.lang, theme: state.theme,
+        data: state.data, settings: state.settings, t: Date.now()
       }));
     } catch (e) { toast(t("common.storageBlocked")); }
+  }
+
+  function audit(action, detail) {
+    if (SP.manage) SP.manage.audit(state.data, action, detail, actor());
+  }
+
+  function signOut() {
+    if (window.SP_AUTH_SIGNOUT) window.SP_AUTH_SIGNOUT();
   }
 
   /* ---------------- helpers ---------------- */
@@ -225,7 +262,8 @@
 
   SP.h = { L: L, t: t, esc: esc, num: num, money: money, pct: pct, badge: badge, card: card,
     cardHead: cardHead, meter: meter, meterRow: meterRow, kpi: kpi, table: table, head: head, tags: tags, callout: callout,
-    state: state, save: save, compStats: compStats, compStatus: compStatus, riskScore: riskScore,
+    state: state, save: save, audit: audit, manage: SP.manage, download: download, render: render,
+    compStats: compStats, compStatus: compStatus, riskScore: riskScore,
     cityRiskScore: cityRiskScore, cityRiskAdj: cityRiskAdj, cityRiskMeta: cityRiskMeta,
     riskTone: riskTone, riskStats: riskStats, delivStats: delivStats, planDone: planDone, toast: toast, el: el,
     statusSelect: statusSelect, toastOk: function (m) { toast(m); } };
@@ -246,6 +284,7 @@
     wp3: '<path d="M4 19V5h16v14z"/><path d="M4 9h16M9 5v14"/>',
     deliverables: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 13h7M9 17h5"/>',
     docs: '<path d="M4 5a2 2 0 012-2h8l6 6v12a2 2 0 01-2 2H6a2 2 0 01-2-2z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h6"/>',
+    management: '<path d="M4 5h16M4 12h16M4 19h16"/><circle cx="7" cy="5" r="2"/><circle cx="7" cy="12" r="2"/><circle cx="7" cy="19" r="2"/>',
     gono: '<path d="M8 4h8a2 2 0 012 2v14H6V6a2 2 0 012-2z"/><path d="M9 3h6v3H9z"/><path d="M9 11l2.2 2.2L16 8.4"/><path d="M9 17h6"/>',
     reporting: '<path d="M4 20V4"/><path d="M4 20h16"/><rect x="7" y="12" width="3" height="5"/><rect x="12" y="8" width="3" height="9"/><rect x="17" y="5" width="3" height="12"/>',
     settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-2.9 1.2 2 2 0 11-4 0 1.7 1.7 0 00-2.9-1.2l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.7 1.7 0 003 15a2 2 0 010-4 1.7 1.7 0 001.2-2.9l-.1-.1a2 2 0 112.8-2.8l.1.1A1.7 1.7 0 0010 4.6a2 2 0 014 0 1.7 1.7 0 002.9 1.2l.1-.1a2 2 0 112.8 2.8l-.1.1A1.7 1.7 0 0021 11a2 2 0 010 4z"/>'
@@ -257,7 +296,7 @@
     { group: "nav.group.comply", items: ["compliance", "evidence", "privacy"] },
     { group: "nav.group.assure", items: ["architecture", "risks", "assurance", "incidents"] },
     { group: "nav.group.operate", items: ["gono", "wp3", "deliverables", "docs"] },
-    { group: "nav.group.ref", items: ["settings"] }
+    { group: "nav.group.ref", items: ["management", "settings"] }
   ];
 
   function evidenceGapCount() {
@@ -300,7 +339,7 @@
     document.documentElement.setAttribute("data-theme", state.theme);
     var ga = state.settings.ga || SP.meta.gaNumber || "—";
     if (el("gaLabel")) el("gaLabel").textContent = ga === "—" ? "—" : "GA " + ga;
-    if (el("sfMeta")) el("sfMeta").textContent = (state.settings.ciso || SP.meta.ownerRole) + " · v" + (window.APP_VERSION || "1.0");
+    if (el("sfMeta")) el("sfMeta").textContent = ((window.SP_AUTH && window.SP_AUTH.label) || state.settings.ciso || SP.meta.ownerRole) + " · v" + (window.APP_VERSION || "1.1.0");
     var cur = state.route.split("/")[0];
     var crumb = el("crumbCurrent");
     if (crumb) crumb.textContent = t("nav." + cur);
@@ -358,7 +397,11 @@
   }
   function exportJson() {
     download("safeparks-ciso-state.json", JSON.stringify({
-      exportedAt: new Date().toISOString(), project: SP.meta.project, state: {
+      exportedAt: new Date().toISOString(), project: SP.meta.project,
+      schemaVersion: state.schemaVersion, appVersion: state.appVersion,
+      updatedAt: state.updatedAt, updatedBy: state.updatedBy,
+      state: {
+        schemaVersion: state.schemaVersion, appVersion: state.appVersion,
         lang: state.lang, theme: state.theme, data: state.data, settings: state.settings
       }
     }, null, 2), "application/json");
@@ -375,7 +418,9 @@
     });
     return {
       kind: "safeparks-brief-state",
-      version: 1,
+      version: 2,
+      schemaVersion: state.schemaVersion || 2,
+      appVersion: state.appVersion || window.APP_VERSION || "1.1.0",
       exportedAt: new Date().toISOString(),
       project: SP.meta.project,
       lang: state.lang,
@@ -388,6 +433,7 @@
       decisions: state.data.decisions || {},
       cityRisks: state.data.cityRisks || {},
       cityRiskMeta: state.data.cityRiskMeta || {},
+      gonoArchive: state.data.gonoArchive || [],
       notes: notes
     };
   }
@@ -428,11 +474,22 @@
     reader.onload = function () {
       try {
         var obj = JSON.parse(String(reader.result));
-        if (!obj || !obj.state) throw new Error("shape");
-        state.data = Object.assign(state.data, obj.state.data || {});
-        state.settings = Object.assign(state.settings, obj.state.settings || {});
-        if (obj.state.lang) state.lang = obj.state.lang;
-        if (obj.state.theme) state.theme = obj.state.theme;
+        if (!SP.manage) throw new Error("management module missing");
+        var result = SP.manage.validate(obj);
+        if (!result.ok) {
+          toast(t("toast.importFailed") + " " + (result.errors[0] || ""));
+          return;
+        }
+        SP.manage.createSnapshot(state.data, "before import", actor());
+        var keepAudit = (state.data.audit || []).slice();
+        var keepSnapshots = (state.data.snapshots || []).slice();
+        state.data = SP.manage.ensure(result.data);
+        if (!result.hasAudit) state.data.audit = keepAudit;
+        if (!result.hasSnapshots) state.data.snapshots = keepSnapshots;
+        state.settings = Object.assign(state.settings, result.settings || {});
+        if (result.lang) state.lang = result.lang;
+        if (result.theme) state.theme = result.theme;
+        audit("state.import", { tasks: state.data.tasks.length, auditEntries: state.data.audit.length });
         save(); render(); toast(t("toast.imported"));
       } catch (e) { toast(t("toast.importFailed")); }
     };
@@ -499,15 +556,16 @@
     return (SP.docs || []).filter(function (d) { return d.id === id; })[0];
   };
   SP.docMarkdown = function (doc) {
+    var dm = (state.data.docMeta || {})[doc.id] || {};
     var out = [];
     out.push("# " + L(doc.title));
     out.push("");
     out.push("| " + t("doc.field.code") + " | " + doc.code + " |");
     out.push("| --- | --- |");
     out.push("| " + t("doc.field.owner") + " | " + doc.owner + " |");
-    out.push("| " + t("doc.field.version") + " | " + doc.version + " |");
-    out.push("| " + t("doc.field.approval") + " | " + doc.approval + " |");
-    out.push("| " + t("doc.field.review") + " | " + doc.review + " |");
+    out.push("| " + t("doc.field.version") + " | " + (dm.version || doc.version) + " |");
+    out.push("| " + t("doc.field.approval") + " | " + (dm.approval || doc.approval) + " |");
+    out.push("| " + t("doc.field.review") + " | " + (dm.review || doc.review) + " |");
     out.push("");
     out.push("**" + t("doc.field.purpose") + ":** " + L(doc.purpose));
     out.push("");
@@ -603,6 +661,24 @@
           '<span class="tiny" style="color:var(--accent)">' + esc(t("common.openView")) + " →</span></a>";
       });
       h += "</div>";
+
+      if (SP.manage) {
+        var mh = SP.manage.health(state.data, null, SP.decisions.map(function (d) { return d.id; }));
+        var mgmtRows = [
+          [mh.tasks.overdue, L({ en: "Overdue tasks", tr: "Gecikmiş görev" })],
+          [mh.pendingDecisions, L({ en: "Pending decisions", tr: "Bekleyen karar" })],
+          [mh.expiredAcceptances, L({ en: "Expired risk acceptances", tr: "Süresi geçmiş risk kabulü" })],
+          [mh.auditEntries, L({ en: "Audit entries", tr: "Denetim kaydı" })]
+        ].map(function (x) {
+          return '<div class="row-between"><span class="tiny t-muted">' + esc(x[1]) + '</span><strong class="mono">' + x[0] + "</strong></div>";
+        }).join("");
+        h += '<div style="margin-top:14px">' + card(cardHead(
+          L({ en: "Management attention", tr: "Yönetim gündemi" }),
+          L({ en: "Tasks, approvals and audit", tr: "Görevler, onaylar ve denetim" }),
+          '<a class="btn btn-sm" href="#management">' + esc(L({ en: "Open console", tr: "Konsolu aç" })) + "</a>") +
+          '<div class="stack-sm">' + mgmtRows + "</div>" +
+          '<p class="hint" style="margin-top:9px">' + esc(L({ en: "Local-first console. A server-side backend is still required for shared multi-user editing.", tr: "Yerel öncelikli konsol. Ortak çok kullanıcılı düzenleme için hâlâ sunucu tarafı backend gerekir." })) + "</p></div>");
+      }
 
       h += '<div style="margin-top:14px">' + callout("<strong>" + esc(t("dash.provenance")) + "</strong> " + esc(t("dash.provenanceBody")), "", "i") + "</div>";
       return h;
@@ -837,7 +913,11 @@
         if (a === "export-brief") exportBriefState();
         if (a === "reset") {
           if (window.confirm(t("menu.resetConfirm"))) {
-            state.data = { comp: {}, risks: {}, deliv: {}, checks: {}, notes: {}, gono: {}, gonoArchive: [], decisions: {}, cityRisks: {}, cityRiskMeta: {} };
+            SP.manage.createSnapshot(state.data, "before reset", actor());
+            var keepAudit = (state.data.audit || []).slice();
+            var keepSnapshots = (state.data.snapshots || []).slice();
+            state.data = { comp: {}, risks: {}, deliv: {}, checks: {}, notes: {}, gono: {}, gonoArchive: [], decisions: {}, cityRisks: {}, cityRiskMeta: {}, decisionMeta: {}, riskAcceptance: {}, kpi: {}, budgetActual: {}, docMeta: {}, tasks: [], audit: keepAudit, snapshots: keepSnapshots, meta: { schemaVersion: 2 } };
+            audit("state.reset", {});
             save(); render(); toast(t("toast.reset"));
           }
         }
@@ -846,16 +926,21 @@
       var evSave = e.target.closest("[data-evidence-save]");
       if (evSave) {
         var evCell = evSave.closest("[data-evidence-entry]");
+        var evKeys = [];
         if (evCell) {
           evCell.querySelectorAll("[data-note]").forEach(function (n) {
-            state.data.notes[n.getAttribute("data-note")] = n.value;
+            var key = n.getAttribute("data-note");
+            state.data.notes[key] = n.value;
+            evKeys.push(key);
           });
         }
+        audit("evidence.save", { keys: evKeys });
         save();
         render();
         toast(t("evp.saved"));
         return;
       }
+      if (e.target.closest("#logoutBtn")) { signOut(); return; }
       var linkChip = e.target.closest("[data-link]");
       if (linkChip) {
         var lk = String(linkChip.getAttribute("data-link")).split(":");
@@ -905,6 +990,7 @@
         if (!state.data.cityRiskMeta) state.data.cityRiskMeta = {};
         if (Object.keys(cm).length) state.data.cityRiskMeta[cmId] = cm;
         else delete state.data.cityRiskMeta[cmId];
+        audit("risk.citymeta", { city: cmId, fields: Object.keys(cm) });
         save();
         render();
         toast(t("risk.cityMetaSaved"));
@@ -963,6 +1049,7 @@
           } else {
             state.data.cityRisks[cid][rid] = next;
           }
+          audit("risk.cityscore", { city: cid, risk: rid, before: cur, after: next });
           save();
           render();
         }
@@ -973,7 +1060,9 @@
         var kind = s.getAttribute("data-status");
         var id = s.getAttribute("data-id");
         if (!state.data[kind]) state.data[kind] = {};
+        var statusBefore = state.data[kind][id] || "(default)";
         state.data[kind][id] = s.value;
+        audit("status.change", { kind: kind, id: id, before: statusBefore, after: s.value });
         s.setAttribute("data-v", s.value);
         save();
         applyChrome();
@@ -981,7 +1070,9 @@
       }
       var c = e.target.closest("[data-check]");
       if (c) {
-        state.data.checks[c.getAttribute("data-check")] = c.checked;
+        var checkId = c.getAttribute("data-check");
+        state.data.checks[checkId] = c.checked;
+        audit("action.toggle", { id: checkId, done: c.checked });
         var lab = c.closest(".check");
         if (lab) lab.classList.toggle("done", c.checked);
         save();
@@ -1022,6 +1113,12 @@
     });
 
     document.addEventListener("focusout", function (e) {
+      var setting = e.target.closest("[data-setting]");
+      if (setting) {
+        audit("settings.change", { field: setting.getAttribute("data-setting"), value: setting.value });
+        save();
+        return;
+      }
       var cell = e.target.closest("[data-evidence-entry]");
       if (!cell || state.route.split("/")[0] !== "evidence") return;
       var next = e.relatedTarget;
@@ -1059,6 +1156,13 @@
     if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches && !localStorage.getItem(STORE_KEY)) {
       state.theme = "dark";
     }
+    var lastActivity = Date.now();
+    function touch() { lastActivity = Date.now(); }
+    document.addEventListener("pointerdown", touch, { passive: true });
+    document.addEventListener("keydown", touch);
+    setInterval(function () {
+      if (Date.now() - lastActivity > 30 * 60 * 1000) signOut();
+    }, 60000);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
