@@ -33,6 +33,12 @@ No build step, no dependencies, no server-side code, no network calls. Open the 
 All editable state (control status, risk status, deliverable status, 90-day ticks, names) is saved in
 `localStorage` under `safeparks-ciso-v1` and can be exported to JSON.
 
+The portal opens behind a password gate for three authorised users. Passwords are not stored in the
+repository; only their SHA-256 digests are checked in the browser. The unlocked session lasts for the
+current browser tab. This is a convenience gate, not a security boundary: GitHub Pages is static, so
+the HTML, data files and generated PDFs remain readable by anyone who has a direct URL or the source.
+Use a server-side access proxy (for example Cloudflare Access) if the content must be confidential.
+
 ---
 
 ## 2. Run it
@@ -57,6 +63,7 @@ is scoped to an origin instead of a `file://` path.)
 ```
 index.html                  shell, sidebar, topbar, script order
 assets/css/style.css        design system, dark/light themes, print styles
+assets/js/auth.js          client-side password gate for authorised portal users
 assets/js/i18n.js           Turkish UI dictionary
 assets/js/i18n-en.js        English UI dictionary
 assets/js/data.js           meta, partners, WPs, WP3 budget/tasks/interfaces, governance
@@ -130,8 +137,9 @@ not a transcription of the signed DoA. Replace them with the negotiated values.
 
 ## 5. Limits of this instrument
 
-* It is **not** a certified system: no authentication, no server, no audit trail beyond the browser.
-  Do not store personal data in it.
+* It is **not** a certified system: the password gate is client-side only, there is no server-side
+  session or audit trail beyond the browser, and a direct URL bypasses the portal screen. Do not store
+  personal data in it.
 * Legal text is a working interpretation, not legal advice; the controller municipalities and their
   DPOs remain responsible for lawfulness.
 * Bilingual content is maintained in parallel; when you edit one language, edit the other.

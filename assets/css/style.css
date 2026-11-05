@@ -80,6 +80,102 @@ li { margin: .18rem 0; }
 code, .mono { font-family: var(--mono); font-size: .86em; letter-spacing: -.01em; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
 
+/* ---------- access gate ---------- */
+html.auth-locked, html.auth-locked body { overflow: hidden; }
+html.auth-locked .shell,
+html.auth-locked .scrim,
+html.auth-locked .toast { visibility: hidden !important; }
+
+.auth-gate {
+  position: fixed; inset: 0; z-index: 2000;
+  display: grid; place-items: center;
+  padding: 22px; overflow-y: auto;
+  background:
+    radial-gradient(760px 440px at 50% -8%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 68%),
+    radial-gradient(620px 400px at 92% 100%, color-mix(in srgb, var(--accent-2) 12%, transparent), transparent 70%),
+    var(--bg);
+}
+html.auth-ok .auth-gate,
+.auth-gate[hidden] { display: none !important; }
+
+.auth-card {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 29px 27px 24px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.auth-card::before {
+  content: "";
+  position: absolute; inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+.auth-mark {
+  display: grid; place-items: center;
+  width: 48px; height: 48px;
+  margin-bottom: 18px;
+  border-radius: 13px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 11%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.auth-kicker {
+  margin-bottom: 7px;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.auth-title { font-size: 25px; margin-bottom: 8px; }
+.auth-desc { color: var(--muted); font-size: 13px; line-height: 1.55; margin-bottom: 20px; }
+.auth-label {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 8px; margin-bottom: 6px;
+  color: var(--text-2); font-size: 12px; font-weight: 600;
+}
+.auth-label span { color: var(--muted); font-size: 10.5px; font-weight: 400; }
+.auth-input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--bg-2);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: .03em;
+}
+.auth-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent); }
+.auth-error { margin-top: 9px; color: var(--danger); font-size: 12px; line-height: 1.45; }
+.auth-submit {
+  width: 100%;
+  margin-top: 14px;
+  padding: 11px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent);
+  border-radius: 9px;
+  background: linear-gradient(100deg, var(--accent), color-mix(in srgb, var(--accent) 60%, var(--accent-2)));
+  color: var(--accent-ink);
+  font-weight: 700;
+  cursor: pointer;
+}
+.auth-submit:hover { filter: brightness(1.05); }
+.auth-submit:disabled { opacity: .65; cursor: wait; }
+.auth-foot { margin-top: 17px; color: var(--muted); font-size: 10.5px; line-height: 1.5; }
+.auth-shake { animation: auth-shake .26s ease-in-out; }
+@keyframes auth-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-shake { animation: none; }
+}
+
 /* ---------- layout ---------- */
 .shell { display: flex; min-height: 100vh; }
 
@@ -711,7 +807,7 @@ tr.row-focus td { background: color-mix(in srgb, var(--accent) 14%, transparent)
     --accent: #0a6b62; --shadow: none; --shadow-sm: none;
   }
   body { background: #fff; font-size: 10.5pt; }
-  .sidebar, .topbar, .foot, .toolbar, .no-print, .scrim, .toast { display: none !important; }
+  .auth-gate, .sidebar, .topbar, .foot, .toolbar, .no-print, .scrim, .toast { display: none !important; }
   .view { padding: 0; max-width: none; }
   .card, .table-wrap, details.acc { break-inside: avoid; box-shadow: none; }
   details.acc { border: 1px solid #ccc; }
