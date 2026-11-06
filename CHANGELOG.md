@@ -3,6 +3,14 @@
 All notable changes to the SAFE-PARKS CISO portal are recorded here. Versions use
 `MAJOR.MINOR.PATCH`; the generated briefs carry the same release state.
 
+## 1.1.1 — 2026-11-06
+
+### Added
+
+- New SAFE-PARKS shield-leaf-pulse mark and horizontal CISO Portal lockup.
+- SVG, PNG and ICO favicons plus a 180 px Apple touch icon.
+- Brand mark applied to the sidebar, access gate and README.
+
 ## 1.1.0 — 2026-11-05
 
 ### Added

@@ -1,5 +1,7 @@
 # SAFE-PARKS · CISO Portal
 
+<p align="center"><img src="assets/img/safe-parks-logo.svg" alt="SAFE-PARKS CISO Portal" width="520"></p>
+
 Bilingual (Türkçe / English) governance, compliance and security-assurance portal for the
 **CISO function of Lotus Sirius** on the SAFE-PARKS Horizon Europe project (WP3 — Cybersecurity,
 Secure Telemetry & NATO EFDI Connector).
@@ -80,6 +82,7 @@ is scoped to an origin instead of a `file://` path.)
 ```
 index.html                  shell, sidebar, topbar, script order
 assets/css/style.css        design system, dark/light themes, print styles
+assets/img/                 SAFE-PARKS mark, logo lockup, favicon and Apple touch icon
 assets/js/auth.js          client-side password gate for authorised portal users
 assets/js/i18n.js           Turkish UI dictionary
 assets/js/i18n-en.js        English UI dictionary

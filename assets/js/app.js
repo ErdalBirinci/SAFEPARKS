@@ -14,7 +14,7 @@
 
   var state = {
     schemaVersion: 2,
-    appVersion: window.APP_VERSION || "1.1.0",
+    appVersion: window.APP_VERSION || "1.1.1",
     updatedAt: "",
     updatedBy: "",
     lang: "tr",
@@ -55,7 +55,7 @@
       state.updatedAt = at;
       state.updatedBy = actor().label;
       state.schemaVersion = (SP.manage && SP.manage.SCHEMA_VERSION) || 2;
-      state.appVersion = window.APP_VERSION || "1.1.0";
+      state.appVersion = window.APP_VERSION || "1.1.1";
       state.data.meta = state.data.meta || {};
       state.data.meta.schemaVersion = state.schemaVersion;
       state.data.meta.updatedAt = at;
@@ -339,7 +339,7 @@
     document.documentElement.setAttribute("data-theme", state.theme);
     var ga = state.settings.ga || SP.meta.gaNumber || "—";
     if (el("gaLabel")) el("gaLabel").textContent = ga === "—" ? "—" : "GA " + ga;
-    if (el("sfMeta")) el("sfMeta").textContent = ((window.SP_AUTH && window.SP_AUTH.label) || state.settings.ciso || SP.meta.ownerRole) + " · v" + (window.APP_VERSION || "1.1.0");
+    if (el("sfMeta")) el("sfMeta").textContent = ((window.SP_AUTH && window.SP_AUTH.label) || state.settings.ciso || SP.meta.ownerRole) + " · v" + (window.APP_VERSION || "1.1.1");
     var cur = state.route.split("/")[0];
     var crumb = el("crumbCurrent");
     if (crumb) crumb.textContent = t("nav." + cur);
@@ -420,7 +420,7 @@
       kind: "safeparks-brief-state",
       version: 2,
       schemaVersion: state.schemaVersion || 2,
-      appVersion: state.appVersion || window.APP_VERSION || "1.1.0",
+      appVersion: state.appVersion || window.APP_VERSION || "1.1.1",
       exportedAt: new Date().toISOString(),
       project: SP.meta.project,
       lang: state.lang,
