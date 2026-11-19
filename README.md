@@ -52,15 +52,36 @@ entries, and the session ends on sign-out or after 30 minutes without input.
 
 A canonical `safeparks-brief-state.json` is versioned so the briefs, go/no-go record and evidence CSV
 have a reviewed baseline. The repository also ships dependency-free unit tests, a data-integrity check
-and a CI gate that refuses stale or untracked artifacts. See `docs/OPERATIONS.md` for the routine and
-release procedure.
+and a CI gate that refuses stale or untracked artifacts. See the [documentation index](docs/README.md)
+for the full operating and release set.
 
 These controls remain local to one browser. Shared multi-user editing, server-side roles, trustworthy
 audit storage and automatic reminders require a backend and are deliberately **not** claimed here.
 
 ---
 
-## 2. Run it
+## 2. Documentation
+
+The complete system documentation is in [`docs/`](docs/README.md). It describes the implemented system,
+including its static-site limits, rather than an intended backend.
+
+| Document | Purpose |
+| --- | --- |
+| [Documentation index](docs/README.md) | Canonical facts, boundaries, environment map and doc maintenance |
+| [Architecture](docs/ARCHITECTURE.md) | Runtime components, script order, routes, state and delivery pipeline |
+| [Data model](docs/DATA-MODEL.md) | State fields, validation, export/import, hash scope and retention |
+| [Workflows](docs/WORKFLOWS.md) | Evidence, risk acceptance, decisions, release and incident procedures |
+| [Operations](docs/OPERATIONS.md) | Service runbook, routine calendar, backup, health and recovery targets |
+| [Security](docs/SECURITY.md) | Threat model, auth limits, CSP, secrets, supply chain and residual risks |
+| [Testing and release](docs/TESTING-AND-RELEASE.md) | Test matrix, CI, artifact gate, release, rollback and smoke checks |
+| [Incident and recovery](docs/INCIDENT-RECOVERY.md) | Severity, first response, scenario runbooks and verification |
+| [Roles and RACI](docs/ROLES-RACI.md) | Decision rights, approvals and separation-of-duties limits |
+| [Glossary](docs/GLOSSARY.md) | Project, security, privacy and portal terms |
+| [`AGENTS.md`](AGENTS.md) | Repository rules for coding agents |
+
+---
+
+## 3. Run it
 
 Directly:
 
@@ -77,7 +98,7 @@ is scoped to an origin instead of a `file://` path.)
 
 ---
 
-## 3. Structure
+## 4. Structure
 
 ```
 index.html                  shell, sidebar, topbar, script order
@@ -125,7 +146,20 @@ tools/check-data.js          validates source counts, required fields, links and
 tests/management.test.js     unit tests for audit, snapshots, tasks, validation and exports
 tests/state-hash.test.js     state-hash stability tests
 safeparks-brief-state.json   canonical reviewed state used to regenerate release artifacts
-docs/OPERATIONS.md           roles, routine work, release, recovery and static-site limits
+docs/README.md               documentation index, canonical facts and boundaries
+docs/ARCHITECTURE.md         runtime, routes, load order, state and delivery pipeline
+docs/DATA-MODEL.md           state fields, validation, export/import, hash scope and retention
+docs/WORKFLOWS.md            evidence, risk, decision, release and incident workflows
+docs/OPERATIONS.md           service runbook, routine work, backup and recovery targets
+docs/SECURITY.md             threat model, auth limits, CSP, supply chain and residual risks
+docs/TESTING-AND-RELEASE.md  test matrix, CI, artifact gate, release and rollback
+docs/INCIDENT-RECOVERY.md    severity, first response and recovery runbooks
+docs/ROLES-RACI.md           decision rights, approvals and separation-of-duties limits
+docs/GLOSSARY.md             project, security, privacy and portal terms
+tools/check-docs.js          required docs and internal-link check
+tools/check-live.js          public Pages and required-asset smoke check
+.github/workflows/pages-health.yml  weekly and manual live check
+AGENTS.md                    repository rules for coding agents
 ```
 
 Local checks:
@@ -133,8 +167,10 @@ Local checks:
 ```bash
 npm test
 npm run check
+npm run docs:check
 npm run build:artifacts
-npm run gate
+npm run gate          # after git add; requires tracked state/artifacts
+npm run live:check    # public Pages availability and assets
 ```
 
 ### Adding or changing content
@@ -149,7 +185,7 @@ npm run gate
 
 ---
 
-## 4. Facts, placeholders and what must be verified
+## 5. Facts, placeholders and what must be verified
 
 Authoritative and used as given: total budget €4,720,000; 12 partners; 7 pilot cities in Belgium,
 Ukraine, Türkiye, Italy and Romania; 7 municipalities × €440,000 = €3,080,000 (65.25 %); coordinator
@@ -171,7 +207,7 @@ not a transcription of the signed DoA. Replace them with the negotiated values.
 
 ---
 
-## 5. Limits of this instrument
+## 6. Limits of this instrument
 
 * It is **not** a certified system: the password gate is client-side only, there is no server-side
   session, and local audit entries can be edited or cleared by whoever controls the browser. A direct
@@ -183,7 +219,7 @@ not a transcription of the signed DoA. Replace them with the negotiated values.
 
 ---
 
-## 6. Print / export
+## 7. Print / export
 
 * `Print / PDF` in the topbar prints the current view (sidebar, topbar and toolbars are hidden;
   collapsed sections are expanded).

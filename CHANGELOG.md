@@ -3,6 +3,25 @@
 All notable changes to the SAFE-PARKS CISO portal are recorded here. Versions use
 `MAJOR.MINOR.PATCH`; the generated briefs carry the same release state.
 
+## Unreleased
+
+### Added
+
+- Full documentation set under `docs/`: index, architecture, data model, workflows, operations, security,
+  testing/release, incident/recovery, roles/RACI and glossary.
+- `AGENTS.md` with repository rules for coding agents.
+- `tools/check-docs.js` for required documents and internal Markdown links.
+- `tools/check-live.js` plus a weekly/manual `pages-health` workflow for the public Pages origin and
+  required static assets.
+- `docs:check` and `live:check` npm scripts.
+
+### Changed
+
+- `brief-state-gate` now also checks JavaScript syntax and documentation links; the required context name
+  is unchanged.
+- README, CONTRIBUTING, SECURITY, CODEOWNERS and the pull-request template link to the new documentation
+  and include the docs check.
+
 ## 1.1.1 — 2026-11-06
 
 ### Added

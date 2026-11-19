@@ -10,6 +10,8 @@
   "scripts": {
     "test": "node --test tests/management.test.js tests/state-hash.test.js",
     "check": "node tools/check-data.js",
+    "docs:check": "node tools/check-docs.js",
+    "live:check": "node tools/check-live.js",
     "build:artifacts": "node tools/build-brief.js --state safeparks-brief-state.json && node tools/build-gono-decisions.js --state safeparks-brief-state.json && node tools/build-evidence-csv.js --state safeparks-brief-state.json",
     "gate": "node tools/ci-gate.js",
     "serve": "node tools/serve.js 4173"

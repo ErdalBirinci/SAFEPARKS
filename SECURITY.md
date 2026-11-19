@@ -26,3 +26,7 @@ A static site cannot enforce access control, store a server-side session or prov
 audit log. Treat the local management data as working state in one browser. For real multi-user access,
 put the site behind a server-side access proxy and move state to an authenticated backend with
 server-side authorisation and audit storage.
+
+The detailed threat model, residual risks and secure-development checklist are in
+[`docs/SECURITY.md`](docs/SECURITY.md). Operational recovery steps are in
+[`docs/INCIDENT-RECOVERY.md`](docs/INCIDENT-RECOVERY.md).

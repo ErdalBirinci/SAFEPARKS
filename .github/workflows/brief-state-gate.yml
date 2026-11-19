@@ -23,9 +23,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: JavaScript syntax
+        run: |
+          for f in assets/js/*.js tools/*.js tests/*.js; do
+            node --check "$f"
+          done
       - name: Unit tests
         run: npm test
       - name: Data integrity
         run: npm run check
+      - name: Documentation links
+        run: npm run docs:check
       - name: Require tracked artifacts and current briefs
         run: node tools/ci-gate.js

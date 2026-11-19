@@ -1,0 +1,27 @@
+name: Pages health
+
+on:
+  schedule:
+    # Weekly, Monday 06:17 UTC. Scheduled workflows use the default branch.
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pages-health:
+    name: pages-health
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out live-check tool
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Verify public Pages and required assets
+        run: npm run live:check
